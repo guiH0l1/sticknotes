@@ -1,0 +1,23 @@
+{
+  "name": "sticknotes",
+  "version": "1.0.0",
+  "description": "Projeto de notas autoadesivas (estilo Post-it) usando um framework Electron e o banco MongoDB",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "https://github.com/guiH0l1/sticknotes.git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guiH0l1/sticknotes.git"
+  },
+  "author": "Guilherme Holi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guiH0l1/sticknotes/issues"
+  },
+  "homepage": "https://github.com/guiH0l1/sticknotes#readme",
+  "devDependencies": {
+    "electron": "^34.3.0"
+  }
+}
