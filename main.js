@@ -6,7 +6,7 @@ console.log("Electron - Processo principal")
 // nativeTheme (definir tema claro ou escuro)
 // Menu (definir um menu personalizado)
 // shell (acessar links externos no navegador padrão)
-const { app, BrowserWindow, nativeTheme, Menu, shell} = require('electron/main')
+const { app, BrowserWindow, nativeTheme, Menu, shell } = require('electron/main')
 
 
 //Janela principal
@@ -35,7 +35,7 @@ const createWindow = () => {
 // Janela sobre
 let about
 function aboutWindow() {
-  nativeTheme.themeSource='light'
+  nativeTheme.themeSource = 'light'
   // obter a janela principal
   const mainWindow = BrowserWindow.getFocusedWindow()
   // validação (se existir a janela principal)
@@ -76,19 +76,19 @@ app.on('window-all-closed', () => {
 })
 
 //Reduzir o verbozidade de tops não criticos (devtools)
-app.commandLine.appendSwitch('log-level','3')
+app.commandLine.appendSwitch('log-level', '3')
 
 //template do meni
 const template = [
   {
     label: 'Notas',
-    submenu: [ 
+    submenu: [
       {
         label: 'Criar nota',
         accelerator: 'Ctrl+N',
       },
       {
-          type: 'separator'
+        type: 'separator'
       },
       {
         label: 'Sair',
@@ -116,14 +116,18 @@ const template = [
         type: 'separator'
       },
       {
+        label: 'Recarregar',
+        role: 'reload'
+      },
+      {
         label: 'DevTools',
         role: 'toggleDevTools'
       }
     ]
   },
-  { 
+  {
     label: 'Ajuda',
-    submenu:[
+    submenu: [
       {
         label: 'Repositorio',
         click: () => shell.openExternal('https://github.com/guiH0l1')
