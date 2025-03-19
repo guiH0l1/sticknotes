@@ -6,8 +6,14 @@ console.log("Electron - Processo principal")
 // nativeTheme (definir tema claro ou escuro)
 // Menu (definir um menu personalizado)
 // shell (acessar links externos no navegador padrão)
-const { app, BrowserWindow, nativeTheme, Menu, shell } = require('electron/main')
+// ipcMain permite estabelecer uma comucação entre os processos (IPC) main.js <-> renderer.js
+const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron/main')
 
+// ativação do preload.js (importação do path)
+const path = require('node:path')
+
+//importação dos métodos conectar e desconectar (módulo de conexão)
+const { conectar, desconectar } = require('./database.js')
 
 //Janela principal
 let win
@@ -22,7 +28,10 @@ const createWindow = () => {
     //minimizable: false,
     //closable: false,
     //autoHideMenuBar: true,
-    //movable: false
+    //movable: false,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js')
+    }
   })
 
   // carregar o menu personalizado
@@ -59,6 +68,20 @@ function aboutWindow() {
 app.whenReady().then(() => {
   createWindow()
 
+  // melhor local para estabeler a conexão com o banco de dados
+  // No MongoDB é mais eficiente manter uma única conexão aberta durante todo o tempo de vida do aplicativo e encerrar a conexão quando o aplicativo for finalizado
+  // ipcMain.on (receber mensagem)
+  // db-connect (rótulo da mensagem)
+  ipcMain.on('db-connect', async (event) => {
+    //alinha abaixo estabelece a conexão com o banco de dados
+    await conectar()
+    // enviar ao renderizador uma mensagem para trocar a imagem do ícone ícone do status do banco dados(Criar um delay 0.5 ou 1s para sincronização com a nuvem)
+    setTimeout(() => {
+      //enviar ao renderizador a mensagem "conectado"
+      // db-status (IPC - comunicação entre processos - proload.js)
+      event.reply('db-status', "conectado")
+    }, 500) //500ms = 0.5s
+  })
 
   // só ativar a janela principal se nenhuma outra estiver ativa
   app.on('activate', () => {
@@ -73,6 +96,11 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+// IMPORTANTE! Desconectar a conexão com o banco dados quando a aplicação for finalizada
+app.on('before-quit', async () => {
+  await desconectar()
 })
 
 //Reduzir o verbozidade de tops não criticos (devtools)

@@ -2,7 +2,7 @@
  * processo de renderização index.html
  */
 
-console.log("processo de renderização")
+console.log("Processo de renderização")
 
 // inserção da data no rodapé
 function obterData() {
@@ -17,3 +17,15 @@ function obterData() {
 }
 
 document.getElementById('dataAtual').innerHTML = obterData()
+
+//troca do ícone do banco de dados (status da conexão)
+// uso do api do preload.js
+api.dbstatus((event, message) => {
+    //Teste de recebimento da mensagem
+    console.log(message)
+    if (message === "conectado") {
+        document.getElementById('iconeDB').src = "../public/img/dbon.png"
+    } else {
+        document.getElementById('iconeDB').src = "../public/img/dboff.png"
+    }
+})
