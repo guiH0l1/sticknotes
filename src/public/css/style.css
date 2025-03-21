@@ -6,16 +6,39 @@
     src: url("../Fredoka/Fredoka-VariableFont_wdth\,wght.ttf");
 }
 
-body{
-    font-family: "Fredoka";
+/* Variaveis para as cores das notas*/
+:root {
+    --amarelo: #fff68f;
+    --azul: #add8e6;
+    --verde: #90ee90;
+    --rosa: #ffb6c1;
+    --laranja: #ffa07a;
+    --cinza: #6c757d;
+    --footer: #090df3;
+}
 
+
+/* CSS Reset */
+* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Fredoka";
+    font-size: 1em;
 }
 
 
 /** Rodapé **/
 footer {
-    background-color: #e15a1f;
+    height: 45px;
+    padding: 5px;
+    background-color: var(--footer);
     display: flex;
+    color: beige;
     justify-content: space-between;
     display: fixed;
     padding: 5px;
@@ -25,11 +48,51 @@ footer {
     width: 100%;
 }
 
-footer p {
-    color: #000000;
-    font-size: 1.1em;
+.container {
+    padding: 15px;
 }
 
-#sobre{
-    background-color: #b3b3b3;
+/* botões*/
+button {
+    padding: 5px 15px;
+    border: 1px solid var(--cinza);
+    border-radius: 5px;
+    cursor: pointer;
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+}
+
+footer p {
+    font-size: 1.1em;
+    margin: 5px 0px 0px 5px;
+}
+
+/* Sobre */
+#sobre h3 {
+    color: var(--cinza);
+    font-weight: 500;
+}
+
+
+/* Janela Nota */
+.novaNota {
+    display: flex;
+    flex-direction: column;
+}
+
+.novaNota input {
+    width: 200px;
+    padding: 10px;
+    margin: 10px 0px 10px 0px;
+    border: 1px solid var(--cinza);
+    border-radius: 5px;
+}
+
+.novaNota select {
+    margin-top: 10px;
+    width: 150px;
+    padding: 7px;
+    border: 1px solid var(--cinza);
+    border-radius: 5px;
 }

@@ -14,6 +14,7 @@ ipcRenderer.send('db-connect')
 
 // permissões para estabelecer a comunicação entre processos
 contextBridge.exposeInMainWorld('api', {
-    dbstatus: (message) => ipcRenderer.on('db-status', message)
+    dbstatus: (message) => ipcRenderer.on('db-status', message),
+    aboutExit: () => ipcRenderer.send('about-exit')
 })
 
