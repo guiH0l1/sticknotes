@@ -15,14 +15,17 @@ const path = require('node:path')
 //importação dos métodos conectar e desconectar (módulo de conexão)
 const { conectar, desconectar } = require('./database.js')
 
+//importar o modelo de dados (Nodes.js)
+const noteModel = require('./src/models/Nodes.js')
+
 //Janela principal
 let win
 const createWindow = () => {
   // definindo o tema claro ou escuroda janela claro ou escuro
   nativeTheme.themeSource = 'light'
   win = new BrowserWindow({
-    width: 1010,
-    height: 720,
+    width: 1080,
+    height: 900,
     //frame: false,
     //resizable: false, 
     //minimizable: false,
@@ -70,15 +73,13 @@ function aboutWindow() {
   //recebimento da mensagem de renderização da tela sobre sobre para fechar a janela usando o botão 'OK'
   ipcMain.on('about-exit', () => {
     //validação (se existir a janela e ela não estiver destruida, fechada)
-    if (about && !about.isDestroyed()){
+    if (about && !about.isDestroyed()) {
       about.close() //fechar a janela
     }
-   
-
   })
 }
 
-// Janela sobre
+// Janela nota
 let note
 function noteWindow() {
   nativeTheme.themeSource = 'light'
@@ -87,11 +88,11 @@ function noteWindow() {
   // validação (se existir a janela principal)
   if (mainWindow) {
     note = new BrowserWindow({
-      width: 320,
+      width: 400,
       height: 230,
       autoHideMenuBar: true,
-      resizable: false,
-      minimizable: false,
+      //resizable: false,
+      //minimizable: false,
       //estabelecer uma relação hierarquica entre janelas
       parent: mainWindow,
       // criar uma janela modal (só retorna a principal quando encerrada)
@@ -119,14 +120,14 @@ app.whenReady().then(() => {
     //alinha abaixo estabelece a conexão com o banco de dados
     // e verifica se foi conectado com sucesso (return true)
     const conectado = await conectar()
-    if(conectado){
+    if (conectado) {
       // enviar ao renderizador uma mensagem para trocar a imagem do ícone ícone do status do banco dados(Criar um delay 0.5 ou 1s para sincronização com a nuvem)
-    setTimeout(() => {
-      //enviar ao renderizador a mensagem "conectado"
-      // db-status (IPC - comunicação entre processos - proload.js)
-      event.reply('db-status', "conectado")
-    }, 500) //500ms = 0.5s
-    } 
+      setTimeout(() => {
+        //enviar ao renderizador a mensagem "conectado"
+        // db-status (IPC - comunicação entre processos - proload.js)
+        event.reply('db-status', "conectado")
+      }, 500) //500ms = 0.5s
+    }
   })
 
   // só ativar a janela principal se nenhuma outra estiver ativa
@@ -214,3 +215,25 @@ const template = [
     ]
   }
 ]
+
+// =================================================================
+// == CRUD Create ==================================================
+
+
+// Recebimento do objeto que contem os dados da nota
+ipcMain.on('create-note', async(event, stickyNote) => {
+  //IMPORTANTE! Teste de recebimento do objeto - Passo 2
+  console.log(stickyNote)
+  //Criar uma nova estrutura de dados para salvar no banco
+  //ATENÇÃO!!! Os atributos da estrutura precisam ser identicos ao modelo e os valores são obtidos através do objeto StickNotes
+  const newNote = noteModel({
+    texto: stickyNote.textNote,
+    cor: stickyNote.colorNote
+  })
+  // Salvar a nota no bancod e dados (Passo 3 - fluxo)
+  newNote.save()
+ })
+
+
+// == Fim - CRUD Create ============================================
+// =================================================================
