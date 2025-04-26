@@ -21,8 +21,6 @@ let color = document.getElementById('selectColor')
 // =================================================================
 // == CRUD Create ==================================================
 
-
-
 // tecle ENTER PRA SALVAR
 // Evento relacionado ao botão submit
 frmNote.addEventListener('submit', async (event) => {
@@ -38,6 +36,18 @@ frmNote.addEventListener('submit', async (event) => {
     // Enviar o objeto para o main (Passo 2: fluxo)
     api.createNote(stickyNote)
 })
+
+
+// === Resetar o Formulario =========================================
+api.resetForm((args) => {
+    // recarregar a pagina notas
+    location.reload()
+    // recarregar a página principal(atualizar notas)
+    api.updateList()
+})
+ 
+// === Fim - Resetar o formulario ===================================
+//===================================================================
 
 // == Fim - CRUD Create ============================================
 // =================================================================

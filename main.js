@@ -6,8 +6,9 @@ console.log("Electron - Processo principal")
 // nativeTheme (definir tema claro ou escuro)
 // Menu (definir um menu personalizado)
 // shell (acessar links externos no navegador padrão)
-// ipcMain permite estabelecer uma comucação entre os processos (IPC) main.js <-> renderer.js
-const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain } = require('electron/main')
+// ipcMain permite estabelecer uma comucação entre os processos (IPC) main.js <=> renderer.js
+// dialog (caixas de mensagens)
+const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain, dialog } = require('electron/main')
 
 // ativação do preload.js (importação do path)
 const path = require('node:path')
@@ -126,7 +127,7 @@ app.whenReady().then(() => {
         //enviar ao renderizador a mensagem "conectado"
         // db-status (IPC - comunicação entre processos - proload.js)
         event.reply('db-status', "conectado")
-      }, 500) //500ms = 0.5s
+      }, 200) //500ms = 0.5s
     }
   })
 
@@ -193,7 +194,7 @@ const template = [
       },
       {
         label: 'Recarregar',
-        role: 'reload'
+        Click: () => updateList()
       },
       {
         label: 'DevTools',
@@ -221,19 +222,103 @@ const template = [
 
 
 // Recebimento do objeto que contem os dados da nota
-ipcMain.on('create-note', async(event, stickyNote) => {
+ipcMain.on('create-note', async (event, stickyNote) => {
   //IMPORTANTE! Teste de recebimento do objeto - Passo 2
   console.log(stickyNote)
-  //Criar uma nova estrutura de dados para salvar no banco
-  //ATENÇÃO!!! Os atributos da estrutura precisam ser identicos ao modelo e os valores são obtidos através do objeto StickNotes
-  const newNote = noteModel({
-    texto: stickyNote.textNote,
-    cor: stickyNote.colorNote
-  })
-  // Salvar a nota no bancod e dados (Passo 3 - fluxo)
-  newNote.save()
- })
+  try {
+    //Criar uma nova estrutura de dados para salvar no banco
+    //ATENÇÃO!!! Os atributos da estrutura precisam ser identicos ao modelo e os valores são obtidos através do objeto StickNotes
+    const newNote = noteModel({
+      texto: stickyNote.textNote,
+      cor: stickyNote.colorNote
+    })
+    // Salvar a nota no bancod e dados (Passo 3 - fluxo)
+    newNote.save()
+
+    event.reply('reset-form')
+  } catch (error) {
+    console.log(error)
+  }
+
+})
 
 
 // == Fim - CRUD Create ============================================
 // =================================================================
+
+
+
+// =================================================================
+// == CRUD Read ====================================================
+
+// Passo 2: Receber do renderer o pedido para listar as notas e fazer a busca no banco de dados
+ipcMain.on('list-notes', async (event) => {
+  //console.log("Teste IPC [list-notes]")
+  try {
+    // Passo 3: Obter do banco de dados a listagem de notas cadastradas
+    const notes = await noteModel.find()
+    console.log(notes) // teste do passo 3
+
+    // Passo 4: Enviar ao renderer a listagem das notas
+    // obs: IPC (string) | banco (jSON) (É necessário uma conversão usando JSON.stringify())
+    // event.reply() resposta a solicitação (especifica do solicitante)
+    event.reply('render-notes', JSON.stringify(notes))
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+
+// ======================================================================
+// == Fim- CRUD Read ====================================================
+
+
+
+// == Inicio - Atualização da lista de notas ============================
+// ======================================================================
+
+
+//atualização das notas na janela principal
+ipcMain.on('update-list', () => {
+  updateList()
+})
+
+function updateList() {
+  // validação (se a janela principal existir e não tiver sido encerrada)
+  if (win && !win.isDestroyed()) {
+    // enviar ao renderer.js um pedido para recarregar a página
+    win.webContents.send('main-reload')
+    // enviar novamente um pedido para troca do ícone de status
+    setTimeout(() => {
+      win.webContents.send('db-status', "conectado")
+    }, 200) // para garantir que o renderer esteja pronto
+  }
+}
+
+// == Fim - Atualização da lista de notas ================================
+// ======================================================================
+
+
+// == inicio CRUD Delte ====================================================
+// =========================================================================
+ipcMain.on('delete-note', async (event, id) => {
+  console.log(id) // teste do Passo 2 (importante!)
+  // excluir o registro do banco (passo 3) IMPORTANTE! (confirmar antes da exclusão)
+  const { response } = await dialog.showMessageBox(win, {
+    type: 'warning',
+    title: "Atenção",
+    message: "Tem certeza que deseja excluir essa nota?\nEsta nota não poderá ser desfeita.",
+    buttons: ['Cancelar', 'Excluir'] // [0,1]
+  })
+  if (response === 1) {
+    try {
+      const deleteNote = await noteModel.findByIdAndDelete(id)
+      updateList()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+})
+// == Fim- CRUD Delete ====================================================
+// ========================================================================
