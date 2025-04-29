@@ -58,13 +58,13 @@ api.renderNotes((event, notes) => {
     // uso do laço forEach para percorrer o vetor e extrair os dados
     arrayNotes.forEach((n) => {
         // adicionar de tgas <li> no documento index.html
+        // var(--${n.cor}) aplica a cor definida nas variaveis CSS. Atenção! É necessário usar o  mesmo nome armazenado no banco das variaveis no CSS
         list.innerHTML += `
-        <br>
-        <li>
+        <li class = "card" style="background-color:var(--${n.cor});">
             <p onclick = "deleteNote('${n._id}')" id ="x">X</p>
-            <p>${n._id}</p>
+            <p id ="code">${n._id}</p>
             <p>${n.texto}</p>
-            <p>${n.cor}</p>
+            <p id ="color">${n.cor}</p>
         </li>
         `
     })
