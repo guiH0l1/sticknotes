@@ -14,7 +14,6 @@ const noteSchema = new Schema({
     cor:{
         type: String
     }
-
 }, {versionKey: false})
 
 //exportar o modelo de dados para o main

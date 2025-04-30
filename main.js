@@ -14,7 +14,7 @@ const { app, BrowserWindow, nativeTheme, Menu, shell, ipcMain, dialog } = requir
 const path = require('node:path')
 
 //importação dos métodos conectar e desconectar (módulo de conexão)
-const { conectar, desconectar } = require('./database.js')
+const { connectDB, disconnectDB } = require('./database.js')
 
 //importar o modelo de dados (Nodes.js)
 const noteModel = require('./src/models/Nodes.js')
@@ -120,14 +120,14 @@ app.whenReady().then(() => {
   ipcMain.on('db-connect', async (event) => {
     //alinha abaixo estabelece a conexão com o banco de dados
     // e verifica se foi conectado com sucesso (return true)
-    const conectado = await conectar()
-    if (conectado) {
+    const connected = await connectDB()
+    if (connected) {
       // enviar ao renderizador uma mensagem para trocar a imagem do ícone ícone do status do banco dados(Criar um delay 0.5 ou 1s para sincronização com a nuvem)
       setTimeout(() => {
         //enviar ao renderizador a mensagem "conectado"
         // db-status (IPC - comunicação entre processos - proload.js)
         event.reply('db-status', "conectado")
-      }, 200) //500ms = 0.5s
+      }, 200) //200ms = 0.2s
     }
   })
 
@@ -148,7 +148,7 @@ app.on('window-all-closed', () => {
 
 // IMPORTANTE! Desconectar a conexão com o banco dados quando a aplicação for finalizada
 app.on('before-quit', async () => {
-  await desconectar()
+  await desconnectDB()
 })
 
 //Reduzir o verbozidade de tops não criticos (devtools)
