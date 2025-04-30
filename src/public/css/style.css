@@ -1,12 +1,10 @@
 @charset "UTF-8";
 
-/** Importação de fonts offline **/
 @font-face {
     font-family: "Fredoka";
     src: url("../Fredoka/Fredoka-VariableFont_wdth\,wght.ttf");
 }
 
-/* Variaveis para as cores das notas*/
 :root {
     --amarelo: #fff68f;
     --azul: #add8e6;
@@ -19,8 +17,6 @@
     --footer: #090df3;
 }
 
-
-/* CSS Reset */
 * {
     margin: 0;
     padding: 0;
@@ -33,8 +29,6 @@ body {
     font-size: 1em;
 }
 
-
-/** Rodapé **/
 footer {
     height: 45px;
     padding: 5px;
@@ -54,7 +48,6 @@ footer {
     padding: 15px;
 }
 
-/* botões*/
 button {
     padding: 5px 15px;
     border: 1px solid var(--cinza);
@@ -70,14 +63,11 @@ footer p {
     margin: 5px 0px 0px 5px;
 }
 
-/* Sobre */
 #sobre h3 {
     color: var(--cinza);
     font-weight: 500;
 }
 
-
-/* Janela Nota */
 .novaNota {
     display: flex;
     flex-direction: column;
@@ -99,7 +89,6 @@ footer p {
     border-radius: 5px;
 }
 
-/* Notas */
 #code, #color {
     display: none;
 }
